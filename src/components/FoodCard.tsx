@@ -1,27 +1,24 @@
-import React, { useState } from "react";
-import { View, Text, Image, TouchableOpacity, TextInput, Linking, Alert } from "react-native";
+import React, { useContext, useState } from "react";
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  TextInput,
+  Linking,
+  Alert,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-
-export interface FoodItem {
-  Id: number;
-  Isim: string;
-  ResimUrl: string;
-  Tur: string;
-  Mevsim: string;
-  Aciklama: string;
-  Fayda: string;
-  Yorum: string;
-  Notu: string;
-  Tarif: string;
-  Favori: boolean;
-}
+import { FoodContext } from "../context/FoodContext";
+import { FoodItem } from "../context/FoodContext";
 
 const FoodCard = ({ item }: { item: FoodItem }) => {
   const [expanded, setExpanded] = useState(false);
   const [note, setNote] = useState(item.Notu || "");
   const [favori, setFavori] = useState(item.Favori);
+  const { foodData, setFoodData } = useContext(FoodContext);
 
-  const BASE_URL = "http://10.116.34.150:8000";
+  const BASE_URL = "http://192.168.1.104:8000";
 
   const handleNoteSave = async () => {
     try {
@@ -38,6 +35,10 @@ const FoodCard = ({ item }: { item: FoodItem }) => {
       }
 
       Alert.alert("Başarılı", "Not kaydedildi!");
+
+      setFoodData((prev) =>
+        prev.map((i) => (i.Id === item.Id ? { ...i, Favori: !i.Favori } : i))
+      );
     } catch (error) {
       console.error(error);
       Alert.alert("Hata", "Not kaydedilirken bir hata oluştu.");
@@ -46,18 +47,24 @@ const FoodCard = ({ item }: { item: FoodItem }) => {
 
   const handleToggleFavorite = async () => {
     try {
-      const response = await fetch(`${BASE_URL}/api/toggle-favorite/${item.Id}/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        `${BASE_URL}/api/toggle-favorite/${item.Id}/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Favori güncellenemedi");
       }
 
       setFavori(!favori);
+      setFoodData((prev) =>
+        prev.map((i) => (i.Id === item.Id ? { ...i, Notu: note } : i))
+      );
     } catch (error) {
       console.error(error);
       Alert.alert("Hata", "Favori durumu güncellenemedi.");
@@ -80,7 +87,9 @@ const FoodCard = ({ item }: { item: FoodItem }) => {
         style={{ width: "100%", height: 200, borderRadius: 10 }}
         resizeMode="cover"
       />
-      <Text style={{ fontSize: 18, fontWeight: "bold", marginTop: 8 }}>{item.Isim}</Text>
+      <Text style={{ fontSize: 18, fontWeight: "bold", marginTop: 8 }}>
+        {item.Isim}
+      </Text>
       <Text>Tür: {item.Tur}</Text>
       <Text>Mevsim: {item.Mevsim}</Text>
       <Text style={{ marginBottom: 6 }}>{item.Aciklama}</Text>
@@ -90,7 +99,9 @@ const FoodCard = ({ item }: { item: FoodItem }) => {
           <Text style={{ marginTop: 10, fontWeight: "bold" }}>Faydalar:</Text>
           <Text>{item.Fayda}</Text>
 
-          <Text style={{ marginTop: 10, fontWeight: "bold" }}>Uzman Yorumları:</Text>
+          <Text style={{ marginTop: 10, fontWeight: "bold" }}>
+            Uzman Yorumları:
+          </Text>
           <Text>{item.Yorum}</Text>
 
           <Text style={{ marginTop: 10, fontWeight: "bold" }}>Notun:</Text>
@@ -115,7 +126,9 @@ const FoodCard = ({ item }: { item: FoodItem }) => {
               marginBottom: 8,
             }}
           >
-            <Text style={{ color: "#fff", textAlign: "center" }}>Notu Kaydet</Text>
+            <Text style={{ color: "#fff", textAlign: "center" }}>
+              Notu Kaydet
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -127,7 +140,9 @@ const FoodCard = ({ item }: { item: FoodItem }) => {
               marginBottom: 8,
             }}
           >
-            <Text style={{ color: "#fff", textAlign: "center" }}>Tarife Git</Text>
+            <Text style={{ color: "#fff", textAlign: "center" }}>
+              Tarife Git
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
