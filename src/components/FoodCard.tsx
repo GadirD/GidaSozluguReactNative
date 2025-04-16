@@ -17,6 +17,7 @@ const FoodCard = ({ item }: { item: FoodItem }) => {
   const [note, setNote] = useState(item.Notu || "");
   const [favori, setFavori] = useState(item.Favori);
   const { foodData, setFoodData } = useContext(FoodContext);
+  const { setRefreshFlag } = useContext(FoodContext);
 
   const BASE_URL = "http://192.168.1.104:8000";
 
@@ -29,16 +30,13 @@ const FoodCard = ({ item }: { item: FoodItem }) => {
         },
         body: JSON.stringify({ note }),
       });
-
+  
       if (!response.ok) {
         throw new Error("Not güncellenemedi");
       }
-
+  
       Alert.alert("Başarılı", "Not kaydedildi!");
-
-      setFoodData((prev) =>
-        prev.map((i) => (i.Id === item.Id ? { ...i, Favori: !i.Favori } : i))
-      );
+      setRefreshFlag((prev) => prev + 1); // Veriyi yenile
     } catch (error) {
       console.error(error);
       Alert.alert("Hata", "Not kaydedilirken bir hata oluştu.");
@@ -56,20 +54,19 @@ const FoodCard = ({ item }: { item: FoodItem }) => {
           },
         }
       );
-
+  
       if (!response.ok) {
         throw new Error("Favori güncellenemedi");
       }
-
+  
       setFavori(!favori);
-      setFoodData((prev) =>
-        prev.map((i) => (i.Id === item.Id ? { ...i, Notu: note } : i))
-      );
+      setRefreshFlag((prev) => prev + 1); // Veriyi yenile
     } catch (error) {
       console.error(error);
       Alert.alert("Hata", "Favori durumu güncellenemedi.");
     }
   };
+  
 
   return (
     <TouchableOpacity

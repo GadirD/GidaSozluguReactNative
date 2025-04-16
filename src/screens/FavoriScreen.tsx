@@ -2,23 +2,40 @@ import React, { useEffect, useState, useContext } from "react";
 import { View, FlatList, ActivityIndicator, StyleSheet } from "react-native";
 import axios from "axios";
 import FoodCard from "../components/FoodCard";
-import { FoodItem } from "../context/FoodContext";
-import { FoodContext } from "../context/FoodContext";
+import { FoodContext, FoodItem } from "../context/FoodContext";
 
 const FavoriScreen: React.FC = () => {
-  const [data, setData] = useState<FoodItem[]>([]);
+  const { foodData, setFoodData, refreshFlag } = useContext(FoodContext);
   const [loading, setLoading] = useState(true);
-  const { foodData } = useContext(FoodContext);
 
-  const mainItems = foodData.filter((item) => item.Favori == true);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await axios.get<FoodItem[]>("http://192.168.1.104:8000/api/favitems/");
+        setFoodData(res.data);
+      } catch (error) {
+        console.error("Veri alınamadı:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [refreshFlag]);
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
 
   return (
     <FlatList
       initialNumToRender={10}
-      maintainVisibleContentPosition={{
-        minIndexForVisible: 0,
-      }}
-      data={mainItems}
+      maintainVisibleContentPosition={{ minIndexForVisible: 0 }}
+      data={foodData}
       renderItem={({ item }) => <FoodCard item={item} />}
       keyExtractor={(item) => item.Id.toString()}
     />
@@ -26,9 +43,6 @@ const FavoriScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  listContainer: {
-    padding: 12,
-  },
   loadingContainer: {
     flex: 1,
     justifyContent: "center",

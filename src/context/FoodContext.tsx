@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect } from "react";
+import React, { createContext, useState } from "react";
 
 export interface FoodItem {
   Id: number;
@@ -17,23 +17,23 @@ export interface FoodItem {
 export const FoodContext = createContext<{
   foodData: FoodItem[];
   setFoodData: React.Dispatch<React.SetStateAction<FoodItem[]>>;
+  refreshFlag: number;
+  setRefreshFlag: React.Dispatch<React.SetStateAction<number>>;
 }>({
   foodData: [],
   setFoodData: () => {},
+  refreshFlag: 0,
+  setRefreshFlag: () => {},
 });
 
 export const FoodProvider = ({ children }: { children: React.ReactNode }) => {
   const [foodData, setFoodData] = useState<FoodItem[]>([]);
-
-  useEffect(() => {
-    fetch("http://192.168.1.104:8000/api/fooditems/")
-      .then((res) => res.json())
-      .then(setFoodData)
-      .catch(console.error);
-  }, []);
+  const [refreshFlag, setRefreshFlag] = useState<number>(0);
 
   return (
-    <FoodContext.Provider value={{ foodData, setFoodData }}>
+    <FoodContext.Provider
+      value={{ foodData, setFoodData, refreshFlag, setRefreshFlag }}
+    >
       {children}
     </FoodContext.Provider>
   );
