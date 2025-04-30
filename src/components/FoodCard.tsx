@@ -11,6 +11,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { FoodContext } from "../context/FoodContext";
 import { FoodItem } from "../context/FoodContext";
+import BASE_URL from "../config/apiConfig";
 
 const FoodCard = ({ item }: { item: FoodItem }) => {
   const [expanded, setExpanded] = useState(false);
@@ -18,8 +19,6 @@ const FoodCard = ({ item }: { item: FoodItem }) => {
   const [favori, setFavori] = useState(item.Favori);
   const { foodData, setFoodData } = useContext(FoodContext);
   const { setRefreshFlag } = useContext(FoodContext);
-
-  const BASE_URL = "http://192.168.1.104:8000";
 
   const handleNoteSave = async () => {
     try {
