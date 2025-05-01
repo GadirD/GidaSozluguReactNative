@@ -86,19 +86,20 @@ const FoodCard = ({ item }: { item: FoodItem }) => {
       <Text style={{ fontSize: 18, fontWeight: "bold", marginTop: 8 }}>
         {item.Isim}
       </Text>
-      <Text>Tür: {item.Tur}</Text>
-      <Text>Mevsim: {item.Mevsim}</Text>
-      <Text style={{ marginBottom: 6 }}>{item.Aciklama}</Text>
+      <Text>Tür: {String(item.Tur ?? "")}</Text>
+      <Text>Mevsim: {String(item.Mevsim ?? "")}</Text>
+
+      <Text style={{ marginBottom: 6 }}>{String(item.Aciklama ?? "")}</Text>
 
       {expanded && (
         <>
           <Text style={{ marginTop: 10, fontWeight: "bold" }}>Faydalar:</Text>
-          <Text>{item.Fayda}</Text>
+          <Text>{String(item.Fayda ?? "")}</Text>
 
           <Text style={{ marginTop: 10, fontWeight: "bold" }}>
             Uzman Yorumları:
           </Text>
-          <Text>{item.Yorum}</Text>
+          <Text>{String(item.Yorum ?? "")}</Text>
 
           <Text style={{ marginTop: 10, fontWeight: "bold" }}>Notun:</Text>
           <TextInput
@@ -128,7 +129,13 @@ const FoodCard = ({ item }: { item: FoodItem }) => {
           </TouchableOpacity>
 
           <TouchableOpacity
-            onPress={() => Linking.openURL(item.Tarif.replace(/^"|"$/g, ""))}
+            onPress={() => {
+              if (item.Tarif) {
+                Linking.openURL(item.Tarif.replace(/^"|"$/g, ""));
+              } else {
+                Alert.alert("Hata", "Tarif linki bulunamadı.");
+              }
+            }}
             style={{
               backgroundColor: "#2196F3",
               padding: 8,

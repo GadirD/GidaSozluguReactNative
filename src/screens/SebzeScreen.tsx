@@ -4,19 +4,20 @@ import axios from "axios";
 import FoodCard from "../components/FoodCard";
 import { FoodContext, FoodItem } from "../context/FoodContext";
 import BASE_URL from "../config/apiConfig";
+import CustomBottomBar from "../components/CustomBottomBar"; // alt menü eklendi
 
 const SebzeScreen: React.FC = () => {
   const { foodData, setFoodData, refreshFlag } = useContext(FoodContext);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null); // Add state for error handling
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    setFoodData([]); // Yeni verileri yüklemeden önce mevcut veriyi sıfırla
+    setFoodData([]);
     const fetchData = async () => {
       setLoading(true);
       setError(null);
       try {
-        const res = await axios.get<FoodItem[]>(`${BASE_URL}/api/fruititems/`);
+        const res = await axios.get<FoodItem[]>(`${BASE_URL}/api/vegitems/`);
         setFoodData(res.data);
       } catch (error: any) {
         if (axios.isAxiosError(error)) {
@@ -29,10 +30,8 @@ const SebzeScreen: React.FC = () => {
         setLoading(false);
       }
     };
-    
     fetchData();
-  }, [refreshFlag, setFoodData]); // refreshFlag değiştiğinde veri yeniden yüklenecek
-  
+  }, [refreshFlag, setFoodData]);
 
   if (loading) {
     return (
@@ -51,13 +50,16 @@ const SebzeScreen: React.FC = () => {
   }
 
   return (
-    <FlatList
-      initialNumToRender={10}
-      maintainVisibleContentPosition={{ minIndexForVisible: 0 }}
-      data={foodData}
-      renderItem={({ item }) => <FoodCard item={item} />}
-      keyExtractor={(item) => item.Id.toString()}
-    />
+    <View style={{ flex: 1 }}>
+      <FlatList
+        initialNumToRender={10}
+        maintainVisibleContentPosition={{ minIndexForVisible: 0 }}
+        data={foodData}
+        renderItem={({ item }) => <FoodCard item={item} />}
+        keyExtractor={(item) => item.Id.toString()}
+      />
+      <CustomBottomBar /> {/* Alt Menü buraya eklendi */}
+    </View>
   );
 };
 
@@ -69,15 +71,15 @@ const styles = StyleSheet.create({
   },
   errorContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     padding: 20,
   },
   errorText: {
-    color: 'red',
+    color: "red",
     fontSize: 16,
-    textAlign: 'center'
-  }
+    textAlign: "center",
+  },
 });
 
 export default SebzeScreen;
