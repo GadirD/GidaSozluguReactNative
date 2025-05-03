@@ -12,12 +12,12 @@ import { Ionicons } from "@expo/vector-icons";
 import { FoodContext } from "../context/FoodContext";
 import { FoodItem } from "../context/FoodContext";
 import BASE_URL from "../config/apiConfig";
+import globalStyles from "../styles/globalStyles";
 
 const FoodCard = ({ item }: { item: FoodItem }) => {
   const [expanded, setExpanded] = useState(false);
   const [note, setNote] = useState(item.Notu || "");
   const [favori, setFavori] = useState(item.Favori);
-  const { foodData, setFoodData } = useContext(FoodContext);
   const { setRefreshFlag } = useContext(FoodContext);
 
   const handleNoteSave = async () => {
@@ -29,13 +29,13 @@ const FoodCard = ({ item }: { item: FoodItem }) => {
         },
         body: JSON.stringify({ note }),
       });
-  
+
       if (!response.ok) {
         throw new Error("Not güncellenemedi");
       }
-  
+
       Alert.alert("Başarılı", "Not kaydedildi!");
-      setRefreshFlag((prev) => prev + 1); // Veriyi yenile
+      setRefreshFlag((prev) => prev + 1);
     } catch (error) {
       console.error(error);
       Alert.alert("Hata", "Not kaydedilirken bir hata oluştu.");
@@ -53,79 +53,56 @@ const FoodCard = ({ item }: { item: FoodItem }) => {
           },
         }
       );
-  
+
       if (!response.ok) {
         throw new Error("Favori güncellenemedi");
       }
-  
+
       setFavori(!favori);
-      setRefreshFlag((prev) => prev + 1); // Veriyi yenile
+      setRefreshFlag((prev) => prev + 1);
     } catch (error) {
       console.error(error);
       Alert.alert("Hata", "Favori durumu güncellenemedi.");
     }
   };
-  
 
   return (
     <TouchableOpacity
       onPress={() => setExpanded(!expanded)}
-      style={{
-        backgroundColor: "#fff",
-        borderRadius: 10,
-        padding: 16,
-        marginVertical: 8,
-        elevation: 4,
-      }}
+      style={globalStyles.card}
     >
       <Image
         source={{ uri: `${BASE_URL}${item.ResimUrl}` }}
-        style={{ width: "100%", height: 200, borderRadius: 10 }}
+        style={globalStyles.cardImage}
         resizeMode="cover"
       />
-      <Text style={{ fontSize: 18, fontWeight: "bold", marginTop: 8 }}>
-        {item.Isim}
-      </Text>
+      <Text style={globalStyles.cardTitle}>{item.Isim}</Text>
       <Text>Tür: {String(item.Tur ?? "")}</Text>
       <Text>Mevsim: {String(item.Mevsim ?? "")}</Text>
-
-      <Text style={{ marginBottom: 6 }}>{String(item.Aciklama ?? "")}</Text>
+      <Text style={{ marginBottom: 6 }}>
+        {item.Aciklama ? item.Aciklama : "Aciklama bilgisi yok"}
+      </Text>
 
       {expanded && (
         <>
-          <Text style={{ marginTop: 10, fontWeight: "bold" }}>Faydalar:</Text>
-          <Text>{String(item.Fayda ?? "")}</Text>
+          <Text style={globalStyles.sectionTitle}>Faydalar:</Text>
+          <Text>{item.Fayda ? item.Fayda : "Faydalar bilgisi yok"}</Text>
 
-          <Text style={{ marginTop: 10, fontWeight: "bold" }}>
-            Uzman Yorumları:
-          </Text>
-          <Text>{String(item.Yorum ?? "")}</Text>
+          <Text style={globalStyles.sectionTitle}>Uzman Yorumları:</Text>
+          <Text>{item.Yorum ? item.Yorum : "Uzman yorumu yok"}</Text>
 
-          <Text style={{ marginTop: 10, fontWeight: "bold" }}>Notun:</Text>
+          <Text style={globalStyles.sectionTitle}>Notun:</Text>
           <TextInput
             value={note}
             onChangeText={setNote}
             placeholder="Not yaz..."
-            style={{
-              backgroundColor: "#f0f0f0",
-              borderRadius: 8,
-              padding: 8,
-              marginTop: 4,
-              marginBottom: 8,
-            }}
+            style={globalStyles.noteInput}
           />
           <TouchableOpacity
             onPress={handleNoteSave}
-            style={{
-              backgroundColor: "#4CAF50",
-              padding: 8,
-              borderRadius: 6,
-              marginBottom: 8,
-            }}
+            style={globalStyles.saveButton}
           >
-            <Text style={{ color: "#fff", textAlign: "center" }}>
-              Notu Kaydet
-            </Text>
+            <Text style={globalStyles.buttonText}>Notu Kaydet</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -136,21 +113,14 @@ const FoodCard = ({ item }: { item: FoodItem }) => {
                 Alert.alert("Hata", "Tarif linki bulunamadı.");
               }
             }}
-            style={{
-              backgroundColor: "#2196F3",
-              padding: 8,
-              borderRadius: 6,
-              marginBottom: 8,
-            }}
+            style={globalStyles.recipeButton}
           >
-            <Text style={{ color: "#fff", textAlign: "center" }}>
-              Tarife Git
-            </Text>
+            <Text style={globalStyles.buttonText}>Tarife Git</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             onPress={handleToggleFavorite}
-            style={{ alignItems: "center", marginTop: 6 }}
+            style={globalStyles.favoriteButton}
           >
             <Ionicons
               name={favori ? "heart" : "heart-outline"}

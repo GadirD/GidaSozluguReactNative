@@ -1,15 +1,36 @@
 import React, { useEffect, useState, useContext } from "react";
-import { View, FlatList, ActivityIndicator, StyleSheet, Text } from "react-native";
+import {
+  View,
+  FlatList,
+  ActivityIndicator,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Modal,
+} from "react-native";
 import axios from "axios";
 import FoodCard from "../components/FoodCard";
 import { FoodContext, FoodItem } from "../context/FoodContext";
 import BASE_URL from "../config/apiConfig";
-import CustomBottomBar from "../components/CustomBottomBar"; // alt menü eklendi
+import CustomBottomBar from "../components/CustomBottomBar";
+import globalStyles from "../styles/globalStyles"; // ✅ STYLES BURADAN GELIYOR
 
 const BalikScreen: React.FC = () => {
   const { foodData, setFoodData, refreshFlag } = useContext(FoodContext);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const [searchText, setSearchText] = useState("");
+  const [selectedSeason, setSelectedSeason] = useState("Hepsi Göster");
+  const [filterModalVisible, setFilterModalVisible] = useState(false);
+
+  const seasonColors: { [key: string]: string } = {
+    "Ilkbahar": "#81C784", // yeşilimsi
+    "Yaz": "#FFB74D",      // turuncumsu
+    "Sonbahar": "#A1887F", // kahverengi ton
+    "Kis": "#64B5F6",      // mavi ton
+  };
+  
 
   useEffect(() => {
     setFoodData([]);
@@ -33,9 +54,18 @@ const BalikScreen: React.FC = () => {
     fetchData();
   }, [refreshFlag, setFoodData]);
 
+  const filteredData = (foodData || []).filter((item) => {
+    const matchesSearch =
+      item.Isim.toLowerCase().includes(searchText.toLowerCase()) ||
+      (item.Yorum || "").toLowerCase().includes(searchText.toLowerCase());
+    const matchesSeason =
+      selectedSeason === "Hepsi Göster" || item.Mevsim === selectedSeason;
+    return matchesSearch && matchesSeason;
+  });
+
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View style={globalStyles.loadingContainer}>
         <ActivityIndicator size="large" color="#0000ff" />
       </View>
     );
@@ -43,43 +73,87 @@ const BalikScreen: React.FC = () => {
 
   if (error) {
     return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>Error: {error}</Text>
+      <View style={globalStyles.errorContainer}>
+        <Text style={globalStyles.errorText}>Error: {error}</Text>
       </View>
     );
   }
 
   return (
     <View style={{ flex: 1 }}>
+      {/* ✅ Arama ve Filtre */}
+      <View style={globalStyles.searchContainer}>
+        <TextInput
+          style={globalStyles.searchInput}
+          placeholder="Ara..."
+          value={searchText}
+          onChangeText={setSearchText}
+        />
+        <TouchableOpacity
+          style={globalStyles.filterButton}
+          onPress={() => setFilterModalVisible(true)}
+        >
+          <Text style={globalStyles.filterButtonText}>Filtrele</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* ✅ Filtre Modal */}
+      <Modal
+        visible={filterModalVisible}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setFilterModalVisible(false)}
+      >
+        <View style={globalStyles.modalOverlay}>
+          <View style={globalStyles.modalContent}>
+            <Text style={globalStyles.modalTitle}>Mevsim Seç</Text>
+            {["Hepsini Göster", "Ilkbahar", "Yaz", "Sonbahar", "Kis"].map(
+              (season) => (
+                <TouchableOpacity
+                  key={season}
+                  style={[
+                    globalStyles.seasonButton,
+                    {
+                      backgroundColor:
+                        selectedSeason === season
+                          ? seasonColors[season] || "#4CAF50" // Seçiliyse özel renk
+                          : "#E0E0E0", // Seçili değilse gri
+                    },
+                  ]}
+                  onPress={() => {
+                    setSelectedSeason(season);
+                    setFilterModalVisible(false);
+                  }}
+                >
+                  <Text
+                    style={[
+                      globalStyles.seasonButtonText,
+                      { color: selectedSeason === season ? "#fff" : "#000" }, // Seçiliyse beyaz yazı
+                    ]}
+                  >
+                    {season}
+                  </Text>
+                </TouchableOpacity>
+              )
+            )}
+          </View>
+        </View>
+      </Modal>
+
+      {/* ✅ Liste */}
       <FlatList
         initialNumToRender={10}
         maintainVisibleContentPosition={{ minIndexForVisible: 0 }}
-        data={foodData}
+        data={filteredData}
         renderItem={({ item }) => <FoodCard item={item} />}
         keyExtractor={(item) => item.Id.toString()}
+        ListEmptyComponent={
+          <Text style={{ textAlign: "center", marginTop: 20 }}>Liste boş</Text>
+        }
       />
-      <CustomBottomBar /> {/* Alt Menü buraya eklendi */}
+      <CustomBottomBar />
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  errorContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-  },
-  errorText: {
-    color: "red",
-    fontSize: 16,
-    textAlign: "center",
-  },
-});
 
 export default BalikScreen;
