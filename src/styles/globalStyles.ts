@@ -1,4 +1,3 @@
-// src/styles/globalStyles.ts
 import { StyleSheet } from 'react-native';
 
 const globalStyles = StyleSheet.create({
@@ -18,8 +17,6 @@ const globalStyles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
   },
-
-  // FoodCard styles
   card: {
     backgroundColor: '#fff',
     borderRadius: 8,
@@ -79,8 +76,6 @@ const globalStyles = StyleSheet.create({
     alignItems: 'center',
     marginVertical: 8,
   },
-
-  // CustomBottomBar styles
   bottomBarContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
@@ -94,14 +89,12 @@ const globalStyles = StyleSheet.create({
     fontSize: 12,
     marginTop: 4,
   },
-
-  // MainScreen styles (search & filter)
   searchContainer: {
     flexDirection: 'row',
     padding: 10,
     alignItems: 'center',
   },
-  searchInput: {  // <-- EKLENDİ
+  searchInput: {
     flex: 1,
     borderColor: '#ccc',
     borderWidth: 1,
@@ -120,7 +113,7 @@ const globalStyles = StyleSheet.create({
     fontSize: 16,
   },
   highlightedText: {
-    backgroundColor: "yellow", // Arama kelimesi vurgulandı
+    backgroundColor: "yellow",
     fontWeight: "bold",
   },
   itemContainer: {
@@ -131,8 +124,6 @@ const globalStyles = StyleSheet.create({
     fontSize: 16,
     color: "#000",
   },
-
-  // Modal styles
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.5)',
@@ -150,14 +141,14 @@ const globalStyles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 10,
   },
-  seasonButton: {  // <-- EKLENDİ
+  seasonButton: {
     backgroundColor: '#E91E63',
     padding: 10,
     borderRadius: 8,
     marginVertical: 5,
     alignItems: 'center',
   },
-  seasonButtonText: {  // <-- EKLENDİ
+  seasonButtonText: {
     color: '#fff',
     fontSize: 16,
   },

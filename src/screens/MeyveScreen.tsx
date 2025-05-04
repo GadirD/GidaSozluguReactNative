@@ -13,7 +13,7 @@ import FoodCard from "../components/FoodCard";
 import { FoodContext, FoodItem } from "../context/FoodContext";
 import BASE_URL from "../config/apiConfig";
 import CustomBottomBar from "../components/CustomBottomBar";
-import globalStyles from "../styles/globalStyles"; // ✅ STYLES BURADAN GELIYOR
+import globalStyles from "../styles/globalStyles";
 
 const MeyveScreen: React.FC = () => {
   const { foodData, setFoodData, refreshFlag } = useContext(FoodContext);
@@ -21,14 +21,14 @@ const MeyveScreen: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   const [searchText, setSearchText] = useState("");
-  const [selectedSeason, setSelectedSeason] = useState("Hepsi Göster");
+  const [selectedSeason, setSelectedSeason] = useState("Hepsini Göster");
   const [filterModalVisible, setFilterModalVisible] = useState(false);
 
   const seasonColors: { [key: string]: string } = {
-    "Ilkbahar": "#81C784", // yeşilimsi
-    "Yaz": "#FFB74D",      // turuncumsu
-    "Sonbahar": "#A1887F", // kahverengi ton
-    "Kis": "#64B5F6",      // mavi ton
+    "Ilkbahar": "#81C784",
+    "Yaz": "#FFB74D",
+    "Sonbahar": "#A1887F",
+    "Kis": "#64B5F6",
   };
   
 
@@ -59,7 +59,7 @@ const MeyveScreen: React.FC = () => {
       item.Isim.toLowerCase().includes(searchText.toLowerCase()) ||
       (item.Yorum || "").toLowerCase().includes(searchText.toLowerCase());
     const matchesSeason =
-      selectedSeason === "Hepsi Göster" || item.Mevsim === selectedSeason;
+      selectedSeason === "Hepsini Göster" || item.Mevsim === selectedSeason;
     return matchesSearch && matchesSeason;
   });
 
@@ -81,7 +81,6 @@ const MeyveScreen: React.FC = () => {
 
   return (
     <View style={{ flex: 1 }}>
-      {/* ✅ Arama ve Filtre */}
       <View style={globalStyles.searchContainer}>
         <TextInput
           style={globalStyles.searchInput}
@@ -97,7 +96,6 @@ const MeyveScreen: React.FC = () => {
         </TouchableOpacity>
       </View>
 
-      {/* ✅ Filtre Modal */}
       <Modal
         visible={filterModalVisible}
         transparent
@@ -116,8 +114,8 @@ const MeyveScreen: React.FC = () => {
                     {
                       backgroundColor:
                         selectedSeason === season
-                          ? seasonColors[season] || "#4CAF50" // Seçiliyse özel renk
-                          : "#E0E0E0", // Seçili değilse gri
+                          ? seasonColors[season] || "#4CAF50"
+                          : "#E0E0E0",
                     },
                   ]}
                   onPress={() => {
@@ -128,7 +126,7 @@ const MeyveScreen: React.FC = () => {
                   <Text
                     style={[
                       globalStyles.seasonButtonText,
-                      { color: selectedSeason === season ? "#fff" : "#000" }, // Seçiliyse beyaz yazı
+                      { color: selectedSeason === season ? "#fff" : "#000" },
                     ]}
                   >
                     {season}
@@ -140,7 +138,6 @@ const MeyveScreen: React.FC = () => {
         </View>
       </Modal>
 
-      {/* ✅ Liste */}
       <FlatList
         initialNumToRender={10}
         maintainVisibleContentPosition={{ minIndexForVisible: 0 }}
