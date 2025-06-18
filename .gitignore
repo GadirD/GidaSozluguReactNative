@@ -34,3 +34,6 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+
+# local config (IP address etc.)
+apiConfig.ts
