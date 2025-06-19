@@ -2,6 +2,10 @@
 
 # dependencies
 node_modules/
+android/app/build/
+ios/Pods/
+*.log
+.env
 
 # Expo
 .expo/
@@ -34,6 +38,3 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
-
-# local config (IP address etc.)
-apiConfig.ts
